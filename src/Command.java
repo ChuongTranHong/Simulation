@@ -1,15 +1,16 @@
 
-public class  Command implements Comparable<Command> {
+public abstract class  Command implements Comparable<Command> {
 	final int CALLINIT = 3;
 	final int CALLHANDOVER = 2;
 	final int CALLTERMINATE = 1;
-	
+	int carId;
 	int type;
 	double time;
 	int station;
-	public  Command(double time, int station){
+	public  Command(double time, int station, int id){
 		this.time = time;
 		this.station = station;
+		this.carId= id;
 	}
 
 	@Override
@@ -24,4 +25,5 @@ public class  Command implements Comparable<Command> {
 		}
 		return 0;
 	}
+	public abstract void execute(Simulation simulation);
 }
