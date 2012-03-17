@@ -19,7 +19,8 @@ public class Simulation {
 	 }
 	public static void main(String args[]) {
 		Simulation simulation = new Simulation();
-		simulation.inputData();
+		simulation.inputSampling(1000);
+//		simulation.inputData();
 		simulation.initCall();
 		simulation.run();
 		simulation.displayResult();
@@ -43,7 +44,23 @@ public class Simulation {
 			queue.addCommand(command);
 		}
 	}
-
+	public void inputSampling(int numberOfData){
+		double currentTime=0;
+		for(int i = 0;i<numberOfData;i++){
+			Car car = new Car();
+			double speed = VariateGenerate.normalDistribution(104, 16.9);
+			car.speed = speed;
+			int station = VariateGenerate.uniformDistributionInteger(0, 19);
+			car.baseStation = station;
+			car.initPosition = VariateGenerate.uniformDistributionDouble(0, 2000);
+			double interval = VariateGenerate.exponentialDistribution(1.92);
+			currentTime+= interval;
+			car.initTime = currentTime;
+			double duration = VariateGenerate.exponentialDistribution(155);
+			car.call.duration = duration;
+			carList.add(car);
+		}
+	}
 	public  void inputData() {
 		try {
 			int limitRead = 200;

@@ -5,4 +5,7 @@ public class Car {
 	int baseStation;
 	double speed;
 	Call call;
+	public Car(){
+		call = new Call();
+	}
 }
