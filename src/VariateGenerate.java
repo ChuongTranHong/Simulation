@@ -7,9 +7,9 @@ public class VariateGenerate {
 		double returnValue = begin + margin*Math.random();
 		return returnValue;
 	}
-	public static int uniformDistributionInteger(int begin , int end){
-		int margin = end - begin;
-		int returnValue = begin + (int)(margin*Math.random());
+	public static int uniformDistributionInteger(double begin , double end){
+		double margin = end - begin;
+		int returnValue = (int)Math.round (begin +margin*Math.random());
 		return returnValue;
 	}
 	public static double exponentialDistribution(double parameter){

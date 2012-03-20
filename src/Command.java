@@ -1,3 +1,5 @@
+import java.io.PrintWriter;
+
 
 public abstract class  Command implements Comparable<Command> {
 	final int CALLINIT = 3;
@@ -25,5 +27,6 @@ public abstract class  Command implements Comparable<Command> {
 		}
 		return 0;
 	}
-	public abstract void execute(Simulation simulation);
+	public abstract void execute(Simulation simulation,PrintWriter print);
+	public abstract void display(PrintWriter print, Simulation simulation);
 }

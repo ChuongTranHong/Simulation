@@ -1,11 +1,15 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Simulation {
@@ -13,23 +17,60 @@ public class Simulation {
 	 public BaseStation[] stationList = new BaseStation[20];
 	 public int handOver=0, droppedCall = 0, blockedCall = 0;
 	 public TimeQueueCommand queue;
+	 public static boolean debugMode = false;
+	 public static boolean reserve = true;
 	 public  Simulation(){
 		 for(int i=0;i<stationList.length;i++)stationList[i] = new BaseStation(i);
 		 queue = new TimeQueueCommand();
 	 }
-	public static void main(String args[]) {
-		Simulation simulation = new Simulation();
-		simulation.inputSampling(1000);
-//		simulation.inputData();
-		simulation.initCall();
-		simulation.run();
-		simulation.displayResult();
+	public static void main(String args[]) throws NumberFormatException, IOException {
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("debug mode?");
+		int mode = sc.nextInt();
+		if(mode == 1 ) debugMode = true;
+		System.out.println("input number of car");
+		
+		int numberOfCar = sc.nextInt();
+		System.out.println("input number of loop");
+		int loop = sc.nextInt();
+		double averageHandOVer= 0;
+		double averageDropCall = 0;
+		double averageblockCall = 0;
+//		System.out.println()
+		for(int i=0;i<loop;i++){
+			Simulation simulation = new Simulation();
+//			simulation.inputSampling(numberOfCar);
+
+			simulation.input();
+			simulation.initCall();
+
+			simulation.run();
+			simulation.displayResult();
+			averageblockCall += simulation.blockedCall;
+			averageDropCall += simulation.droppedCall;
+			averageHandOVer +=simulation.handOver;
+		}
+		System.out.println(" ********************");
+		System.out.println("average No of hand over "+ (averageHandOVer/loop));
+		System.out.println("average No of drop call  "+ (averageDropCall/loop));
+		System.out.println("average No of block call "+ (averageblockCall/loop));
 	}
-	public void run(){
+//	public void displayQueue(TimeQueueCommand queue){
+//		for(int i=0;i<queue.size();i++){
+//			InitCommand command = (InitCommand)queue.getCommand(i);
+//			System.out.println("id "+i +" carid "+command.carId+" time "+command.time+" station "+command.station+" initPo "+command.position+" duration "+command.duration);
+//		}
+//	}
+	public void run() throws IOException{
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
+				"output.xml")));
 		while(!queue.isEmpty()){
 			Command command = queue.deQueue();
-			command.execute(this);
+			command.display(out, this);
+			command.execute(this,out);
 		}
+		out.close();
 	}
 	public void displayResult(){
 		System.out.println("--------------------");
@@ -40,6 +81,7 @@ public class Simulation {
 	public void initCall(){
 		for(int i=0;i<carList.size();i++){
 			Car car = carList.get(i);
+//			System.out.println("id "+i +" time "+car.initTime+" station "+car.baseStation+" speed "+car.speed+" duration "+car.call.duration);
 			Command command = new InitCommand(car.initTime, car.speed, car.baseStation,car.initPosition, car.call.duration, i);
 			queue.addCommand(command);
 		}
@@ -48,10 +90,12 @@ public class Simulation {
 		double currentTime=0;
 		for(int i = 0;i<numberOfData;i++){
 			Car car = new Car();
-			double speed = VariateGenerate.normalDistribution(104, 16.9);
+			double speed = VariateGenerate.normalDistribution(104, 16.9)/3.6;
 			car.speed = speed;
-			int station = VariateGenerate.uniformDistributionInteger(0, 19);
+			int station = VariateGenerate.uniformDistributionInteger(0.5, 20.5)-1;
+//			car.baseStation = 0;
 			car.baseStation = station;
+//			System.out.println("station "+station);
 			car.initPosition = VariateGenerate.uniformDistributionDouble(0, 2000);
 			double interval = VariateGenerate.exponentialDistribution(1.92);
 			currentTime+= interval;
@@ -61,7 +105,7 @@ public class Simulation {
 			carList.add(car);
 		}
 	}
-	public  void inputData() {
+	/*public  void inputData() {
 		try {
 			int limitRead = 200;
 			int currentRead = 0;
@@ -124,6 +168,39 @@ public class Simulation {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}*/
+	public void input() throws NumberFormatException, IOException{
+	
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				new FileInputStream("station.txt")));
+		String strLine;
+		double speed;
+		double interval;
+		double duration;
+		double initPosition;
+		int station;
+		double currentTime = 0;
+		int i=0;
+		int count =0;
+		while ((strLine = br.readLine()) != null  && count<10000) {
+			
+			StringTokenizer st = new StringTokenizer(strLine);
+			initPosition=Double.parseDouble(st.nextToken());
+			interval = Double.parseDouble(st.nextToken());
+			currentTime +=interval;
+			station = Integer.parseInt(st.nextToken());
+			duration = Double.parseDouble(st.nextToken());
+			speed = Double.parseDouble(st.nextToken());
+
+			Car car = new Car();
+			car.initTime = currentTime;
+			car.baseStation = station;
+			car.initPosition = initPosition;
+			car.speed = speed/3.6;
+			car.call.duration = duration;
+			carList.add(car);
+			count++;
 		}
 	}
 }

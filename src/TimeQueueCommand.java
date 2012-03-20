@@ -13,6 +13,12 @@ public class TimeQueueCommand {
 		boolean added = false;
 		for (int i = 0; i < commandQueue.size(); i++) {
 			Command currentCommand = commandQueue.get(i);
+//			if(command.time<currentCommand.time){
+//				commandQueue.add(i,command);
+//				return;
+//				
+//				
+//			}
 			if (command.compareTo(currentCommand) < 0) {
 				commandQueue.add(i, command);
 				added = true;
@@ -28,5 +34,11 @@ public class TimeQueueCommand {
 	}
 	public boolean isEmpty(){
 		return (commandQueue.size()==0);
+	}
+	public int size(){
+		return commandQueue.size();
+	}
+	public Command getCommand(int i){
+		return commandQueue.get(i);
 	}
 }
