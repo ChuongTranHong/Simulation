@@ -13,6 +13,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Simulation {
+
 	// public ArrayList<Car> carList = new ArrayList<Car>();
 	public BaseStation[] stationList = new BaseStation[20];
 	public int handOver = 0, droppedCall = 0, blockedCall = 0;
@@ -72,6 +73,7 @@ public class Simulation {
 			Command command = queue.deQueue();
 			command.display(out, this);
 			command.execute(this, out);
+
 		}
 		out.close();
 	}
@@ -95,9 +97,12 @@ public class Simulation {
 
 			Command command = new InitCommand(car.initTime, car.speed,
 					car.baseStation, car.initPosition, car.call.duration, i);
+
+	
 			queue.addCommand(command);
 			currentTime = car.initTime;
 		}
+
 
 		int hour = (int) (currentTime / 3600);
 
@@ -123,7 +128,93 @@ public class Simulation {
 		car.call.duration = duration;
 		return car;
 
+
 	}
+	public void inputSampling(int numberOfData){
+		double currentTime=0;
+		for(int i = 0;i<numberOfData;i++){
+			Car car = new Car();
+			double speed = VariateGenerate.normalDistribution(104, 16.9)/3.6;
+			car.speed = speed;
+			int station = VariateGenerate.uniformDistributionInteger(0.5, 20.5)-1;
+//			car.baseStation = 0;
+			car.baseStation = station;
+//			System.out.println("station "+station);
+			car.initPosition = VariateGenerate.uniformDistributionDouble(0, 2000);
+			double interval = VariateGenerate.exponentialDistribution(1.92);
+			currentTime+= interval;
+			car.initTime = currentTime;
+			double duration = VariateGenerate.exponentialDistribution(155);
+			car.call.duration = duration;
+		
+		}
+	}
+	/*public  void inputData() {
+		try {
+			int limitRead = 200;
+			int currentRead = 0;
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					new FileInputStream("call_arrival_g04.txt")));
+			String strLine;
+			br.readLine();
+			br.readLine();
+			while ((strLine = br.readLine()) != null && currentRead < limitRead) {
+				StringTokenizer st = new StringTokenizer(strLine);
+				st.nextToken();
+				st.nextToken();
+				Car car = new Car();
+				car.initTime = Double.parseDouble(st.nextToken());
+				car.baseStation = Integer.parseInt(st.nextToken())-1;
+				car.initPosition = Math.random() * 2000;
+				carList.add(car);
+				currentRead++;
+			}
+			currentRead = 0;
+			br.close();
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(
+					"car_speed_g04.txt")));
+			br.readLine();
+			br.readLine();
+			while ((strLine = br.readLine()) != null && currentRead < limitRead) {
+				StringTokenizer st = new StringTokenizer(strLine);
+				int index = Integer.parseInt(st.nextToken()) - 1;
+				carList.get(index).speed = Double.parseDouble(st.nextToken())*1000/3600;
+				currentRead++;
+			}
+			currentRead = 0;
+			br.close();
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(
+					"call_duration_g04.txt")));
+			br.readLine();
+			br.readLine();
+			while ((strLine = br.readLine()) != null && currentRead < limitRead) {
+				StringTokenizer st = new StringTokenizer(strLine);
+				int index = Integer.parseInt(st.nextToken()) - 1;
+				Call call = new Call();
+				call.duration = Double.parseDouble(st.nextToken());
+
+				carList.get(index).call = call;
+				currentRead++;
+			}
+			currentRead = 0;
+			br.close();
+//			System.out.println("carlist length " + carList.size());
+//			System.out.println("car 0 " + carList.get(0).initTime + " base "
+//					+ carList.get(0).baseStation + "" + " speed "
+//					+ carList.get(0).speed + " call "
+//					+ carList.get(0).call.duration);
+//			System.out.println("car 0 "
+//					+ carList.get(carList.size() - 1).initTime + " " + "base "
+//					+ carList.get(carList.size() - 1).baseStation + " speed "
+//					+ carList.get(carList.size() - 1).speed + " call "
+//					+ carList.get(carList.size() - 1).call.duration);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}*/
+	
 	/*
 	 * public void inputData() { try { int limitRead = 200; int currentRead = 0;
 	 * BufferedReader br = new BufferedReader(new InputStreamReader( new
