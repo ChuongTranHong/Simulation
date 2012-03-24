@@ -19,10 +19,10 @@ public class Simulation {
 	public int handOver = 0, droppedCall = 0, blockedCall = 0;
 	public TimeQueueCommand queue;
 	public static boolean debugMode = false;
-	public static boolean reserve = false;
+	public static boolean reserve = true;
 	public static int numberOfCar;
 	public int numberOfServeCar = 0;
-
+	
 	public Simulation() {
 		for (int i = 0; i < stationList.length; i++)
 			stationList[i] = new BaseStation(i);
@@ -31,7 +31,9 @@ public class Simulation {
 
 	public static void main(String args[]) throws NumberFormatException,
 			IOException {
-
+		double averageHandOVer = 0;
+		double averageDropCall = 0;
+		double averageblockCall = 0;
 		Scanner sc = new Scanner(System.in);
 		System.out.println("debug mode?");
 		int mode = sc.nextInt();
@@ -42,9 +44,7 @@ public class Simulation {
 		numberOfCar = sc.nextInt();
 		System.out.println("input number of loop");
 		int loop = sc.nextInt();
-		double averageHandOVer = 0;
-		double averageDropCall = 0;
-		double averageblockCall = 0;
+		
 
 
 		for (int i = 0; i < loop; i++) {
@@ -52,16 +52,18 @@ public class Simulation {
 			simulation.initCall(numberOfCar);
 			simulation.run();
 			simulation.displayResult();
-			averageblockCall += simulation.blockedCall;
-			averageDropCall += simulation.droppedCall;
-			averageHandOVer += simulation.handOver;
+			averageDropCall += (double) simulation.droppedCall / (numberOfCar-simulation.blockedCall) * 100;
+			averageblockCall +=(double) simulation.blockedCall / numberOfCar * 100;
+//			averageblockCall += simulation.blockedCall;
+//			averageDropCall += simulation.droppedCall;
+//			averageHandOVer += simulation.handOver;
 		}
 		System.out.println(" ********************");
-		System.out.println("average No of hand over "
-				+ (averageHandOVer / loop));
-		System.out.println("average No of drop call  "
+//		System.out.println("average No of hand over "
+//				+ (averageHandOVer / loop));
+		System.out.println("average  of drop call  "
 				+ (averageDropCall / loop));
-		System.out.println("average No of block call "
+		System.out.println("average  of block call "
 				+ (averageblockCall / loop));
 	}
 
@@ -82,11 +84,14 @@ public class Simulation {
 		System.out.println("--------------------");
 		System.out.println("number of hand over " + handOver);
 		System.out.println("number of drop call " + droppedCall);
+		
 		System.out.println("average of drop call "
 				+ ((double) droppedCall / (numberOfCar-blockedCall) * 100));
+//		averageDropCall += (double) droppedCall / (numberOfCar-blockedCall) * 100;
 		System.out.println("number of block call " + blockedCall);
 		System.out.println("average of block call "
 				+ ((double) blockedCall / numberOfCar * 100));
+//		averageblockCall +=(double) blockedCall / numberOfCar * 100;
 	}
 
 	public void initCall(int numberOfCar) {
